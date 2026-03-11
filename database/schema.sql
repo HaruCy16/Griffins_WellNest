@@ -15,11 +15,11 @@
 -- DROP DATABASE IF EXISTS wellnest_db;
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS wellnest_db 
+CREATE DATABASE IF NOT EXISTS griffine_wellnest_db
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
-USE wellnest_db;
+USE griffine_wellnest_db;
 
 -- ==============================================================================
 -- TABLE 1: ROLES
