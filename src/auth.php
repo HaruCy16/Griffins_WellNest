@@ -167,7 +167,7 @@ function handleRegister(): void {
                 $data['last_name'],
                 ROLE_STUDENT,
                 $data['section_id'],
-                $data['student_id']
+                strtoupper($data['student_id'])  // Store in uppercase for consistency
             ]
         );
         

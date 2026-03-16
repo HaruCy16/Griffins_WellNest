@@ -54,7 +54,7 @@ if (isLoggedIn()) {
           Log In
         </a>
         <a href="views/register.php" class="block w-full px-6 py-3 border-2 border-electric-blue text-electric-blue rounded-lg font-semibold hover:bg-electric-blue-50 transition duration-300">
-          Create Account
+          Create Account 
         </a>
       </div>
     </div>

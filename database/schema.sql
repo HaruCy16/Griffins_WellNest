@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- GRIFFINS' WELLNEST - Complete Database Schema (FIXED)
 -- Version: 1.1
--- Database: wellnest_db
+-- Database: griffin_wellnest_db
 -- ==============================================================================
 -- 
 -- CHANGES FROM 1.0:
@@ -12,14 +12,14 @@
 -- ==============================================================================
 
 -- Drop existing database (WARNING: This deletes all data)
--- DROP DATABASE IF EXISTS wellnest_db;
+-- DROP DATABASE IF EXISTS griffin_wellnest_db;
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS griffine_wellnest_db
+CREATE DATABASE IF NOT EXISTS griffin_wellnest_db
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
-USE griffine_wellnest_db;
+USE griffin_wellnest_db;
 
 -- ==============================================================================
 -- TABLE 1: ROLES
@@ -86,7 +86,7 @@ CREATE TABLE assessments (
     assessment_id INT PRIMARY KEY AUTO_INCREMENT,
     assessment_name VARCHAR(150) UNIQUE NOT NULL COMMENT 'Stress Assessment, Anxiety Test, etc',
     description TEXT COMMENT 'What does this assessment measure?',
-    assessment_type ENUM('stress', 'anxiety', 'depression', 'general') NOT NULL,
+    assessment_type ENUM('stress', 'anxiety', 'depression', 'general', 'school_experience', 'mental_health', 'help_seeking') NOT NULL,
     total_questions INT NOT NULL COMMENT 'Number of questions in assessment',
     estimated_time INT NOT NULL COMMENT 'Time in minutes to complete',
     instructions TEXT COMMENT 'Instructions for student',
@@ -106,7 +106,7 @@ CREATE TABLE questions (
     question_id INT PRIMARY KEY AUTO_INCREMENT,
     assessment_id INT NOT NULL,
     question_text TEXT NOT NULL COMMENT 'The actual question',
-    question_type ENUM('likert', 'yes_no', 'multiple_choice', 'scale') NOT NULL,
+    question_type ENUM('likert', 'yes_no', 'multiple_choice', 'scale', 'open_text', 'voice_note') NOT NULL,
     question_order INT NOT NULL COMMENT 'Display order in assessment (1, 2, 3...)',
     category VARCHAR(50) COMMENT 'Question category for grouping',
     weight DECIMAL(3,2) DEFAULT 1.00 COMMENT 'Point multiplier if applicable',
@@ -146,8 +146,10 @@ CREATE TABLE assessment_responses (
     assessment_id INT NOT NULL,
     user_id INT NOT NULL,
     question_id INT NOT NULL,
-    selected_option_id INT NOT NULL COMMENT 'Which option they chose',
-    score_points DECIMAL(5,2) NOT NULL COMMENT 'Points for this answer',
+    selected_option_id INT NULL COMMENT 'Which option they chose (for objective questions)',
+    response_text TEXT COMMENT 'Open-text response content',
+    voice_note_path VARCHAR(255) COMMENT 'Path/URL to uploaded voice message',
+    score_points DECIMAL(5,2) NOT NULL DEFAULT 0 COMMENT 'Points for this answer',
     response_time_seconds INT COMMENT 'Time spent on this question',
     completed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
@@ -226,7 +228,7 @@ CREATE TABLE recommendations (
 CREATE TABLE therapeutic_games (
     game_id INT PRIMARY KEY AUTO_INCREMENT,
     game_name VARCHAR(100) UNIQUE NOT NULL COMMENT 'Breathing Game, Memory Game, etc',
-    game_type ENUM('breathing', 'memory', 'puzzle', 'garden', 'mindfulness') NOT NULL,
+    game_type ENUM('breathing', 'memory', 'puzzle', 'garden', 'mindfulness', 'simulation') NOT NULL,
     description TEXT COMMENT 'What does this game teach/do?',
     target_emotion ENUM('stress', 'anxiety', 'depression', 'focus', 'general') COMMENT 'What emotion does it target?',
     difficulty_level ENUM('easy', 'medium', 'hard') DEFAULT 'medium',

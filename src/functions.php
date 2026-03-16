@@ -9,6 +9,9 @@ if (!defined('WELLNEST_APP')) {
     define('WELLNEST_APP', true);
 }
 
+// Load database class
+require_once __DIR__ . '/../config/database.php';
+
 // =============================================================================
 // SESSION FUNCTIONS
 // =============================================================================
@@ -401,4 +404,193 @@ function timeAgo(string $datetime): string {
     } else {
         return formatDate($datetime);
     }
+}
+
+// =============================================================================
+// API HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Return JSON success response
+ * @param mixed $data Data to return
+ * @param string $message Success message
+ * @param int $statusCode HTTP status code
+ */
+function respondSuccess($data = [], string $message = 'Success', int $statusCode = 200): void {
+    http_response_code($statusCode);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'message' => $message,
+        'data' => $data,
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+    exit;
+}
+
+/**
+ * Return JSON error response
+ * @param string $message Error message
+ * @param int $statusCode HTTP status code
+ * @param mixed $errors Additional error details
+ */
+function respondError(string $message = 'Error', int $statusCode = 400, $errors = null): void {
+    http_response_code($statusCode);
+    header('Content-Type: application/json');
+    $response = [
+        'success' => false,
+        'message' => $message,
+        'code' => $statusCode,
+        'timestamp' => date('Y-m-d H:i:s')
+    ];
+    if ($errors !== null) {
+        $response['errors'] = $errors;
+    }
+    echo json_encode($response);
+    exit;
+}
+
+/**
+ * Require user to be authenticated and optionally check role
+ * @param int|array|null $allowedRoles Optional role ID(s) to restrict access
+ * @return bool|void Returns true if authorized, exits if not
+ */
+function requireAuth($allowedRoles = null) {
+    startSession();
+    
+    if (!isLoggedIn()) {
+        return respondError('Unauthorized: Please log in', 401);
+    }
+    
+    // If specific roles required, check them
+    if ($allowedRoles !== null) {
+        $allowedRoles = is_array($allowedRoles) ? $allowedRoles : [$allowedRoles];
+        $currentRole = getCurrentUserRole();
+        
+        if (!in_array($currentRole, $allowedRoles)) {
+            return respondError('Forbidden: You do not have permission to access this resource', 403);
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * Execute a query with parameters
+ * @param string $sql SQL query with placeholders
+ * @param array $params Parameters to bind
+ * @return int Returns affected rows count
+ */
+function executeQuery(string $sql, array $params = []): int {
+    try {
+        $stmt = Database::query($sql, $params);
+        return $stmt->rowCount();
+    } catch (Exception $e) {
+        logError('Query Execution Error', ['sql' => $sql, 'error' => $e->getMessage()]);
+        throw $e;
+    }
+}
+
+/**
+ * Check if a record exists in a table
+ * @param string $table Table name
+ * @param array $where Where conditions ['column' => 'value']
+ * @return bool
+ */
+function recordExists(string $table, array $where = []): bool {
+    try {
+        $conditions = [];
+        $params = [];
+        
+        foreach ($where as $column => $value) {
+            $conditions[] = "$column = ?";
+            $params[] = $value;
+        }
+        
+        $sql = "SELECT COUNT(*) as count FROM $table";
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+        
+        $result = Database::fetchOne($sql, $params);
+        return ($result['count'] ?? 0) > 0;
+    } catch (Exception $e) {
+        logError('Record Exists Check Error', ['table' => $table, 'error' => $e->getMessage()]);
+        return false;
+    }
+}
+
+/**
+ * Log error message
+ * @param string $context Context/title of error
+ * @param array $details Error details
+ */
+function logError(string $context, array $details = []): void {
+    $logMessage = "[" . date('Y-m-d H:i:s') . "] " . $context;
+    
+    if (!empty($details)) {
+        $logMessage .= " | " . json_encode($details);
+    }
+    
+    $logFile = __DIR__ . '/../logs/error.log';
+    
+    // Create logs directory if it doesn't exist
+    if (!is_dir(dirname($logFile))) {
+        mkdir(dirname($logFile), 0755, true);
+    }
+    
+    error_log($logMessage . PHP_EOL, 3, $logFile);
+}
+
+/**
+ * Alias for logAction - logs to audit_logs table
+ * @param string $actionType CREATE, READ, UPDATE, DELETE, LOGIN, LOGOUT, SUBMIT_RESPONSE, COMPLETE_ASSESSMENT, etc
+ * @param string $entityType Table/entity name
+ * @param int|null $userId User ID (defaults to current user)
+ * @param array $details Additional details
+ */
+function logAudit(string $actionType, string $entityType, ?int $userId = null, array $details = []): void {
+    try {
+        $userId = $userId ?? getCurrentUserId();
+        $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $description = !empty($details) ? json_encode($details) : null;
+        
+        Database::insert(
+            "INSERT INTO audit_logs (user_id, action_type, entity_type, description, ip_address, user_agent) 
+             VALUES (?, ?, ?, ?, ?, ?)",
+            [$userId, $actionType, $entityType, $description, $ip, $userAgent]
+        );
+    } catch (Exception $e) {
+        logError('Audit log failed', ['error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Get database connection (for compatibility with provided API code)
+ * Should use Database:: class instead, but kept for backward compatibility
+ * @return PDO
+ */
+function getConnection(): PDO {
+    return Database::getConnection();
+}
+
+/**
+ * Fetch single row (alias for Database::fetchOne)
+ * @param string $sql SQL query
+ * @param array $params Parameters
+ * @return array|false
+ */
+function fetchOne(string $sql, array $params = []) {
+    return Database::fetchOne($sql, $params);
+}
+
+/**
+ * Fetch all rows (alias for Database::fetchAll)
+ * @param string $sql SQL query
+ * @param array $params Parameters
+ * @return array
+ */
+function fetchAll(string $sql, array $params = []): array {
+    return Database::fetchAll($sql, $params);
 }

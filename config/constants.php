@@ -25,6 +25,11 @@ define('ROLE_NAMES', [
 // =============================================================================
 // ASSESSMENT TYPE CONSTANTS
 // =============================================================================
+define('ASSESSMENT_SCHOOL_EXPERIENCE', 'school_experience');
+define('ASSESSMENT_MENTAL_HEALTH', 'mental_health');
+define('ASSESSMENT_HELP_SEEKING', 'help_seeking');
+
+// Backward-compatible constants (legacy)
 define('ASSESSMENT_STRESS', 'stress');
 define('ASSESSMENT_ANXIETY', 'anxiety');
 define('ASSESSMENT_DEPRESSION', 'depression');
@@ -53,6 +58,7 @@ define('GAME_MEMORY', 'memory');
 define('GAME_PUZZLE', 'puzzle');
 define('GAME_GARDEN', 'garden');
 define('GAME_MINDFULNESS', 'mindfulness');
+define('GAME_SIMULATION', 'simulation');
 
 // =============================================================================
 // NOTIFICATION TYPE CONSTANTS
