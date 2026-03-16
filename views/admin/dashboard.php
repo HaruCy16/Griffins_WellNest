@@ -88,7 +88,7 @@ include __DIR__ . '/../layouts/header.php';
 </div>
 
 <!-- Recent Activity -->
-<div class="bg-white rounded-xl shadow-md p-6">
+<div id="recent-activity" class="bg-white rounded-xl shadow-md p-6">
     <h2 class="text-xl font-semibold text-bronze mb-4">Recent Activity</h2>
     
     <?php if (empty($recentLogs)): ?>

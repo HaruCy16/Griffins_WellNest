@@ -166,7 +166,11 @@ function validateName(string $name, string $fieldName = 'Name'): ValidationResul
 // =============================================================================
 
 /**
- * Validate student ID format
+ * Validate student ID format: YYYYSSSNNNN (e.g., 2025SHS0299)
+ * - YYYY = 4-digit year
+ * - SSS = 3-letter school type (e.g., SHS, JHS)
+ * - NNNN = 4-digit student number
+ * 
  * @param string $studentId Student ID to validate
  * @return ValidationResult
  */
@@ -178,14 +182,9 @@ function validateStudentId(string $studentId): ValidationResult {
         return $result;
     }
     
-    // Allow alphanumeric with dashes (adjust pattern as needed)
-    if (!preg_match('/^[A-Za-z0-9\-]+$/', $studentId)) {
-        $result->addError('student_id', 'Student ID contains invalid characters.');
-        return $result;
-    }
-    
-    if (strlen($studentId) < 4 || strlen($studentId) > 50) {
-        $result->addError('student_id', 'Student ID must be between 4 and 50 characters.');
+    // Enforce format: 4 digits + 3 letters + 4 digits (e.g., 2025SHS0299)
+    if (!preg_match('/^\d{4}[A-Z]{3}\d{4}$/', strtoupper($studentId))) {
+        $result->addError('student_id', 'Student ID must be in format YYYYSSSNNNN (e.g., 2025SHS0299).');
         return $result;
     }
     
@@ -240,7 +239,7 @@ function validateRegistration(array $data): ValidationResult {
     if (empty($email)) {
         $result->addError('email', 'Email is required.');
     } elseif (!isValidEmail($email)) {
-        $result->addError('email', 'Please enter a valid email address.');
+        $result->addError('email', 'Please use your school email (@my.nst.edu.ph).');
     } elseif (emailExists($email)) {
         $result->addError('email', 'This email is already registered.');
     }

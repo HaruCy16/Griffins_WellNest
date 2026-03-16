@@ -59,7 +59,7 @@ $csrfToken = generateCsrfToken();
     <div class="w-full max-w-lg">
         <!-- Logo/Header -->
         <div class="text-center mb-6">
-            <img src="../assets/logo.png" alt="Griffin's Wellnest" class="w-20 h-20 mx-auto mb-4 object-contain">
+            <img src="../assets/logo_griffin.png" alt="Griffin's Wellnest" class="w-20 h-20 mx-auto mb-4 object-contain">
             <h1 class="text-3xl font-bold text-bronze"><?= e(APP_NAME) ?></h1>
             <p class="text-body-gray mt-2">Create Your Account</p>
         </div>
@@ -152,10 +152,12 @@ $csrfToken = generateCsrfToken();
                             value="<?= e($oldData['student_id'] ?? '') ?>"
                             required
                             class="w-full px-4 py-3 border <?= isset($errors['student_id']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg focus:ring-2 focus:ring-golden focus:border-transparent transition duration-200 outline-none"
-                            placeholder="2024-00001"
+                            placeholder="2025SHS0299"
                         >
                         <?php if (isset($errors['student_id'])): ?>
                             <p class="mt-1 text-sm text-red-500"><?= e($errors['student_id']) ?></p>
+                        <?php else: ?>
+                            <p class="mt-1 text-xs text-gray-500">Format: YYYYSSSNNNN (e.g., 2025SHS0299)</p>
                         <?php endif; ?>
                     </div>
                     
