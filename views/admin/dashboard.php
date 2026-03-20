@@ -87,6 +87,27 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 </div>
 
+<!-- Management Actions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <a href="/Wellnest_Sim_Web_Application/views/admin/users.php" class="bg-bronze text-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+        <div class="text-3xl mb-2">👥</div>
+        <h3 class="text-xl font-bold mb-1">User Management</h3>
+        <p class="text-bronze-100 text-sm">Add, edit, and manage counselors and administrators</p>
+    </a>
+    
+    <a href="/Wellnest_Sim_Web_Application/views/admin/settings.php" class="bg-electric-blue text-bronze rounded-xl shadow-md p-6 hover:shadow-lg transition">
+        <div class="text-3xl mb-2">⚙️</div>
+        <h3 class="text-xl font-bold mb-1">System Settings</h3>
+        <p class="text-sm">Configure application settings and preferences</p>
+    </a>
+    
+    <a href="/Wellnest_Sim_Web_Application/views/admin/dashboard.php#recent-activity" class="bg-golden text-bronze rounded-xl shadow-md p-6 hover:shadow-lg transition">
+        <div class="text-3xl mb-2">📊</div>
+        <h3 class="text-xl font-bold mb-1">View Reports</h3>
+        <p class="text-golden-800 text-sm">Review audit logs and recent activity</p>
+    </a>
+</div>
+
 <!-- Recent Activity -->
 <div id="recent-activity" class="bg-white rounded-xl shadow-md p-6">
     <h2 class="text-xl font-semibold text-bronze mb-4">Recent Activity</h2>

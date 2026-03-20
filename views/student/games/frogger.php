@@ -241,6 +241,36 @@ $userId = $_SESSION['user_id'];
             border-color: #825E2F;
         }
 
+        /* Assessment Requirement Modal */
+        .assessment-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .assessment-modal.hidden {
+            display: none;
+        }
+
+        .assessment-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: scaleIn 0.3s ease;
+            border-left: 6px solid #F6C604;
+        }
+
         /* Game Over Modal */
         .game-over-modal {
             display: none;
@@ -363,9 +393,7 @@ $userId = $_SESSION['user_id'];
 <body>
     <div class="game-container">
         <div class="game-header">
-            <h1>🐸 Frogger Challenge</h1>
-            <p style="color: #666; font-size: 14px;">Help the frog cross safely to reach the goal!</p>
-        </div>
+                <h1>🐸 Frogger Blocks Crossing</h1>
 
         <div class="game-stats">
             <div class="stat-box">
@@ -390,8 +418,8 @@ $userId = $_SESSION['user_id'];
 
         <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-        <!-- Pre-Game Mood Selection (Hidden once game starts) -->
-        <div id="preGameScreen" class="mood-section" style="text-align: center;">
+        <!-- Pre-Game Mood Selection (Hidden until assessment is confirmed) -->
+        <div id="preGameScreen" class="mood-section" style="text-align: center; display: none;">
             <h3 style="margin-bottom: 20px;">Before we start, how are you feeling right now?</h3>
             <div class="mood-options" style="justify-content: center; margin-bottom: 20px;">
                 <button class="mood-btn pre-mood-btn" data-mood="calm">😊 Calm</button>
@@ -432,6 +460,40 @@ $userId = $_SESSION['user_id'];
                 <button class="mood-btn" data-mood="energetic">⚡ Energetic</button>
                 <button class="mood-btn" data-mood="tired">😴 Tired</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Assessment Requirement Modal -->
+    <div class="assessment-modal" id="assessmentModal">
+        <div class="assessment-panel">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p style="font-size: 48px; margin-bottom: 10px;">📋</p>
+                <h2 style="color: #333; margin-bottom: 10px;">Assessment Required</h2>
+                <p style="color: #666; font-size: 14px; line-height: 1.6;">
+                    To get the best therapeutic benefits from this wellness game, please complete at least one assessment first.
+                </p>
+            </div>
+            
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; color: #555;">
+                <strong style="display: block; color: #333; margin-bottom: 8px;">✓ Why assessments matter:</strong>
+                Assessments help us understand your wellness needs and provide personalized support through games and recommendations.
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="/Wellnest_Sim_Web_Application/views/student/assessments.php" 
+                   style="padding: 12px 24px; background: linear-gradient(135deg, #A37D4A 0%, #6B4E27 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; cursor: pointer; border: none; font-size: 14px;">
+                    📋 Take an Assessment
+                </a>
+                
+                <button id="skipAssessmentBtn" 
+                        style="padding: 12px 24px; background: #ddd; color: #333; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
+                    I've Already Completed One
+                </button>
+            </div>
+            
+            <p style="text-align: center; color: #999; font-size: 12px; margin-top: 15px;">
+                You can always take more assessments later to track your progress
+            </p>
         </div>
     </div>
 
@@ -865,6 +927,18 @@ $userId = $_SESSION['user_id'];
         }
 
         // ===== UI BUTTON HANDLERS =====
+        
+        // Assessment Modal Handler
+        document.getElementById('skipAssessmentBtn').addEventListener('click', () => {
+            // Hide assessment modal
+            const assessmentModal = document.getElementById('assessmentModal');
+            assessmentModal.classList.add('hidden');
+            
+            // Show pre-game mood selection
+            const preGameScreen = document.getElementById('preGameScreen');
+            preGameScreen.style.display = 'block';
+        });
+        
         // Pre-game mood selection
         document.querySelectorAll('.pre-mood-btn').forEach(btn => {
             btn.addEventListener('click', () => {

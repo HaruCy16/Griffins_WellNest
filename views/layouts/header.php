@@ -47,12 +47,12 @@ $flash = getFlashMessage();
                         <a href="<?= APP_URL ?>/views/student/notifications.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Notifications</a>
                     <?php elseif (isCounselor()): ?>
                         <a href="<?= APP_URL ?>/views/counselor/dashboard.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Dashboard</a>
-                        <a href="<?= APP_URL ?>/views/counselor/dashboard.php#attention" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Students</a>
+                        <a href="<?= APP_URL ?>/views/counselor/students.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Students</a>
                         <a href="<?= APP_URL ?>/views/counselor/dashboard.php#recent-assessments" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Reports</a>
                     <?php elseif (isAdmin()): ?>
                         <a href="<?= APP_URL ?>/views/admin/dashboard.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Dashboard</a>
-                        <a href="<?= APP_URL ?>/views/admin/dashboard.php#recent-activity" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Users</a>
-                        <a href="<?= APP_URL ?>/views/admin/dashboard.php#recent-activity" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Settings</a>
+                        <a href="<?= APP_URL ?>/views/admin/users.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Users</a>
+                        <a href="<?= APP_URL ?>/views/admin/settings.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Settings</a>
                     <?php endif; ?> 
                 </div>
                 
