@@ -50,7 +50,7 @@ $csrfToken = generateCsrfToken();
     <div class="w-full max-w-md">
         <!-- Logo/Header -->
         <div class="text-center mb-8">
-            <img src="../assets/logo_griffin.png" alt="Griffin's Wellnest" class="w-20 h-20 mx-auto mb-4 object-contain">
+            <img src="../assets/logo_griffin.png" alt="Griffins' WellNest" class="w-20 h-20 mx-auto mb-4 object-contain">
             <h1 class="text-3xl font-bold text-bronze"><?= e(APP_NAME) ?></h1>
             <p class="text-body-gray mt-2">Mental Health Support System</p>
         </div>

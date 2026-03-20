@@ -16,7 +16,7 @@ define('APP_DEBUG', APP_ENV === 'development');
 // =============================================================================
 // APPLICATION INFO
 // =============================================================================
-define('APP_NAME', "Griffin's Wellnest");
+define('APP_NAME', "Griffins' WellNest");
 define('APP_VERSION', '1.0.0');
 define('APP_URL', 'http://localhost/Wellnest_Sim_Web_Application');
 

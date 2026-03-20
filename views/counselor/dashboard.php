@@ -133,6 +133,27 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 </div>
 
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <a href="#attention" class="bg-bronze text-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+        <div class="text-3xl mb-2">🚨</div>
+        <h3 class="text-xl font-bold mb-1">High Risk Students</h3>
+        <p class="text-bronze-100 text-sm">Review students needing immediate attention</p>
+    </a>
+    
+    <a href="#recent-assessments" class="bg-electric-blue text-bronze rounded-xl shadow-md p-6 hover:shadow-lg transition">
+        <div class="text-3xl mb-2">📊</div>
+        <h3 class="text-xl font-bold mb-1">View Assessments</h3>
+        <p class="text-electric-blue-100 text-sm">Check recent assessment results</p>
+    </a>
+    
+    <a href="/Wellnest_Sim_Web_Application/views/counselor/students.php" class="bg-golden text-bronze rounded-xl shadow-md p-6 hover:shadow-lg transition">
+        <div class="text-3xl mb-2">👥</div>
+        <h3 class="text-xl font-bold mb-1">Manage Students</h3>
+        <p class="text-golden-800 text-sm">Access all student profiles and data</p>
+    </a>
+</div>
+
 <!-- Two Column Layout -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     

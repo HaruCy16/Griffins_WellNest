@@ -51,6 +51,19 @@ try {
             <p class="text-body-gray text-lg mt-2">Choose an assessment to evaluate your mental health and well-being</p>
         </div>
 
+        <!-- Privacy & Confidentiality Notice -->
+        <div class="bg-golden-50 border-2 border-golden rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex items-start gap-4">
+                <div class="text-3xl flex-shrink-0">🔒</div>
+                <div>
+                    <h3 class="text-lg font-bold mb-2 text-bronze">Your Privacy Matters</h3>
+                    <p class="leading-relaxed text-sm text-bronze">
+                        Your thoughts and feelings are important to us. Please know that anything you share here is completely private and will only be accessible to the Office of the School Counselor. Your honesty is safe, and we're here to support you.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($assessments as $a): ?>
                 <div class="bg-white rounded-xl shadow p-8 assessment-card">
@@ -171,9 +184,17 @@ try {
             <p class="text-sm text-gray-600 mt-2">Question <?= $currentQuestion ?> of <?= $totalQuestions ?></p>
         </div>
 
-        <!-- Privacy Notice -->
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mb-8">
-            <p class="text-sm text-gray-700"><strong>🔒 Privacy Notice:</strong> <?= e($assessment['instructions']) ?></p>
+        <!-- Privacy & Confidentiality Notice -->
+        <div class="bg-golden-50 border-2 border-golden rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex items-start gap-4">
+                <div class="text-3xl flex-shrink-0">🔒</div>
+                <div>
+                    <h3 class="text-lg font-bold mb-2 text-bronze">Your Privacy Matters</h3>
+                    <p class="leading-relaxed text-sm text-bronze">
+                        Your thoughts and feelings are important to us. Please know that anything you share here is completely private and will only be accessible to the Office of the School Counselor. Your honesty is safe, and we're here to support you.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 

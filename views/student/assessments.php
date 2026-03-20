@@ -69,6 +69,17 @@ include __DIR__ . '/../layouts/header.php';
     <p class="text-body-gray text-lg mt-2">Complete assessments to track your mental wellness and get personalized recommendations</p>
 </div>
 
+<!-- Privacy & Confidentiality Notice -->
+<div class="bg-golden-50 border-2 border-golden rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex items-start gap-4">
+                <div class="text-3xl flex-shrink-0">🔒</div>
+                <div>
+                    <h3 class="text-lg font-bold mb-2 text-bronze">Your Privacy Matters</h3>
+                    <p class="leading-relaxed text-sm text-bronze">
+        </div>
+    </div>
+</div>
+
 <!-- Stats -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
     <div class="bg-bronze text-white rounded-xl shadow p-6">
@@ -79,7 +90,7 @@ include __DIR__ . '/../layouts/header.php';
         <div class="text-3xl font-bold"><?= count($assessmentHistory) ?></div>
         <div class="text-sm mt-2 opacity-90">Completed</div>
     </div>
-    <div class="bg-green-500 text-white rounded-xl shadow p-6">
+    <div class="bg-green-500 text-bronze rounded-xl shadow p-6">
         <div class="text-3xl font-bold"><?= count(array_unique(array_column($assessmentHistory, 'assessment_id'))) ?></div>
         <div class="text-sm mt-2 opacity-90">Unique Assessments Taken</div>
     </div>

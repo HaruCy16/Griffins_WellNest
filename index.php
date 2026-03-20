@@ -37,7 +37,7 @@ if (isLoggedIn()) {
   <div class="flex flex-col items-center justify-center min-h-screen px-4">
     <!-- Logo/Brand -->
     <div class="mb-8 text-center">
-      <img src="assets/logo_griffin.png" alt="Griffin's Wellnest Logo" class="w-24 h-24 mx-auto mb-4 object-contain">
+      <img src="assets/logo_griffin.png" alt="Griffins' WellNest Logo" class="w-24 h-24 mx-auto mb-4 object-contain">
       <h1 class="text-4xl font-bold text-bronze mb-2"><?= e(APP_NAME) ?></h1>
       <p class="text-lg text-body-gray">Mental Health Support System</p>
     </div>
