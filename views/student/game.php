@@ -19,6 +19,12 @@ requireRole(ROLE_STUDENT);
 $user = getCurrentUser();
 $gameId = isset($_GET['id']) ? intval($_GET['id']) : 1; // Default to House Adventure (id=1)
 
+// Special handling for Frogger game (id=2)
+if ($gameId === 2) {
+    // Redirect to Frogger game
+    redirect('/Wellnest_Sim_Web_Application/views/student/games/frogger.php');
+}
+
 try {
     $game = Database::fetchOne(
         "SELECT * FROM therapeutic_games WHERE game_id = ? AND is_active = TRUE",

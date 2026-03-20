@@ -43,8 +43,8 @@ $flash = getFlashMessage();
                 <div class="hidden md:flex items-center space-x-4">
                     <?php if (isStudent()): ?>
                         <a href="<?= APP_URL ?>/views/student/dashboard.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Dashboard</a>
-                        <a href="<?= APP_URL ?>/views/student/dashboard.php#assessments" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Assessments</a>
-                        <a href="<?= APP_URL ?>/views/student/dashboard.php#recommendations" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Recommendations</a>
+                        <a href="<?= APP_URL ?>/views/student/assessments.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Assessments</a>
+                        <a href="<?= APP_URL ?>/views/student/notifications.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Notifications</a>
                     <?php elseif (isCounselor()): ?>
                         <a href="<?= APP_URL ?>/views/counselor/dashboard.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Dashboard</a>
                         <a href="<?= APP_URL ?>/views/counselor/dashboard.php#attention" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Students</a>
@@ -53,7 +53,7 @@ $flash = getFlashMessage();
                         <a href="<?= APP_URL ?>/views/admin/dashboard.php" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Dashboard</a>
                         <a href="<?= APP_URL ?>/views/admin/dashboard.php#recent-activity" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Users</a>
                         <a href="<?= APP_URL ?>/views/admin/dashboard.php#recent-activity" class="px-3 py-2 rounded-md hover:bg-bronze-600 transition">Settings</a>
-                    <?php endif; ?>
+                    <?php endif; ?> 
                 </div>
                 
                 <!-- User Menu -->

@@ -131,23 +131,23 @@ include __DIR__ . '/../layouts/header.php';
     <div>
         
         <!-- Statistics Card -->
-        <div class="bg-gradient-to-br from-bronze to-golden rounded-xl shadow-md p-6 text-white mb-6 card-hover">
-            <h3 class="text-xl font-bold mb-4">📈 Your Stats</h3>
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 card-hover">
+            <h3 class="text-xl font-bold text-bronze mb-4">📈 Your Stats</h3>
             
             <div class="space-y-4">
-                <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                    <p class="text-sm text-white text-opacity-90">Assessments Completed</p>
-                    <p class="text-3xl font-bold"><?= $totalScore['count'] ?></p>
+                <div class="bg-gradient-to-br from-bronze to-golden rounded-lg p-4 text-white">
+                    <p class="text-xs text-white text-opacity-90 font-semibold mb-1">Assessments Completed</p>
+                    <p class="text-4xl font-bold"><?= $totalScore['count'] ?></p>
                 </div>
                 
-                <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                    <p class="text-sm text-white text-opacity-90">Total Score Points</p>
-                    <p class="text-3xl font-bold"><?= intval($totalScore['total'] ?? 0) ?></p>
+                <div class="bg-gradient-to-br from-bronze to-golden rounded-lg p-4 text-white">
+                    <p class="text-xs text-white text-opacity-90 font-semibold mb-1">Total Score Points</p>
+                    <p class="text-4xl font-bold"><?= intval($totalScore['total'] ?? 0) ?></p>
                 </div>
                 
-                <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                    <p class="text-sm text-white text-opacity-90">Average Score</p>
-                    <p class="text-3xl font-bold"><?= $totalScore['count'] > 0 ? round($totalScore['total'] / $totalScore['count'], 1) : 0 ?>%</p>
+                <div class="bg-gradient-to-br from-bronze to-golden rounded-lg p-4 text-white">
+                    <p class="text-xs text-white text-opacity-90 font-semibold mb-1">Average Score</p>
+                    <p class="text-4xl font-bold"><?= $totalScore['count'] > 0 ? round($totalScore['total'] / $totalScore['count'], 1) : 0 ?>%</p>
                 </div>
             </div>
         </div>
@@ -157,19 +157,19 @@ include __DIR__ . '/../layouts/header.php';
             <h3 class="text-lg font-bold text-bronze mb-4">Quick Links</h3>
             
             <div class="space-y-3">
-                <a href="/Wellnest_Sim_Web_Application/views/student/dashboard.php" class="block p-3 border rounded-lg hover:border-golden hover:bg-golden-50 transition text-center font-semibold text-bronze">
+                <a href="/Wellnest_Sim_Web_Application/views/student/dashboard.php" class="block p-4 border-l-4 border-golden rounded-lg hover:shadow-md transition text-bronze font-semibold card-hover" style="background-color: #fafafa;">
                     📊 Dashboard
                 </a>
                 
-                <a href="/Wellnest_Sim_Web_Application/views/student/game.php" class="block p-3 border rounded-lg hover:border-golden hover:bg-golden-50 transition text-center font-semibold text-bronze">
+                <a href="/Wellnest_Sim_Web_Application/views/student/games/frogger.php" class="block p-4 border-l-4 border-golden rounded-lg hover:shadow-md transition text-bronze font-semibold card-hover" style="background-color: #fafafa;">
                     🎮 Play Games
                 </a>
                 
-                <a href="/Wellnest_Sim_Web_Application/views/student/notifications.php" class="block p-3 border rounded-lg hover:border-golden hover:bg-golden-50 transition text-center font-semibold text-bronze">
+                <a href="/Wellnest_Sim_Web_Application/views/student/notifications.php" class="block p-4 border-l-4 border-golden rounded-lg hover:shadow-md transition text-bronze font-semibold card-hover" style="background-color: #fafafa;">
                     🔔 Notifications
                 </a>
                 
-                <a href="/Wellnest_Sim_Web_Application/src/auth.php?action=logout" class="block p-3 border border-red-300 bg-red-50 rounded-lg hover:bg-red-100 transition text-center font-semibold text-red-600">
+                <a href="/Wellnest_Sim_Web_Application/src/auth.php?action=logout" class="block p-4 border-l-4 border-red-500 rounded-lg hover:shadow-md transition text-red-600 font-semibold card-hover" style="background-color: #fef2f2;">
                     🚪 Logout
                 </a>
             </div>

@@ -115,6 +115,13 @@ include __DIR__ . '/../layouts/header.php';
         color: white;
         border-color: #10b981;
     }
+    .card-hover {
+        transition: all 0.3s;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
 </style>
 
 <div class="container mx-auto px-4 py-8">
@@ -151,21 +158,18 @@ include __DIR__ . '/../layouts/header.php';
     </div>
     
     <!-- Notifications List -->
-    <div class="space-y-4">
+    <div class="space-y-4 p-12">
         <?php if (empty($notifications)): ?>
         
             <div class="bg-white rounded-xl shadow-md p-12 text-center">
                 <p style="font-size: 48px; margin-bottom: 12px;">📭</p>
                 <h2 class="text-2xl font-bold text-gray-700 mb-2">No notifications</h2>
                 <p class="text-gray-600 mb-6">You're all caught up! Check back for updates on your assessments and recommendations.</p>
-                <a href="/Wellnest_Sim_Web_Application/views/student/dashboard.php" class="inline-block bg-bronze text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition">
-                    ← Back to Dashboard
-                </a>
             </div>
         
         <?php else: ?>
         
-            <?php foreach ($notifications as $notif): ?>
+            <?php foreach ($notifications as $notif): ?> 
             <div class="notification-card bg-white rounded-xl shadow-md p-6 <?= !$notif['is_read'] ? 'unread' : '' ?>" id="notif-<?= $notif['notification_id'] ?>">
                 <div class="flex items-start justify-between">
                     <div class="flex items-start flex-1">
@@ -225,20 +229,20 @@ include __DIR__ . '/../layouts/header.php';
     
     <!-- Quick Links -->
     <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a href="/Wellnest_Sim_Web_Application/views/student/dashboard.php" class="bg-gradient-to-br from-bronze to-orange-600 text-white rounded-xl p-6 hover:shadow-lg transition">
+        <a href="/Wellnest_Sim_Web_Application/views/student/dashboard.php" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-golden card-hover">
             <p style="font-size: 28px; margin-bottom: 8px;">📊</p>
-            <h3 class="font-bold mb-1">Dashboard</h3>
-            <p class="text-sm text-white text-opacity-90">View your wellness overview</p>
+            <h3 class="font-bold mb-1 text-bronze">Dashboard</h3>
+            <p class="text-sm text-gray-600">View your wellness overview</p>
         </a>
-        <a href="/Wellnest_Sim_Web_Application/views/student/game.php" class="bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl p-6 hover:shadow-lg transition">
+        <a href="/Wellnest_Sim_Web_Application/views/student/games/frogger.php" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-golden card-hover">
             <p style="font-size: 28px; margin-bottom: 8px;">🎮</p>
-            <h3 class="font-bold mb-1">Play Game</h3>
-            <p class="text-sm text-white text-opacity-90">Try the Crossroads simulation</p>
+            <h3 class="font-bold mb-1 text-bronze">Play Game</h3>
+            <p class="text-sm text-gray-600">Try the Frogger wellness game</p>
         </a>
-        <a href="/Wellnest_Sim_Web_Application/views/student/profile.php" class="bg-gradient-to-br from-teal-500 to-cyan-500 text-white rounded-xl p-6 hover:shadow-lg transition">
+        <a href="/Wellnest_Sim_Web_Application/views/student/profile.php" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-golden card-hover">
             <p style="font-size: 28px; margin-bottom: 8px;">👤</p>
-            <h3 class="font-bold mb-1">My Profile</h3>
-            <p class="text-sm text-white text-opacity-90">View your assessment history</p>
+            <h3 class="font-bold mb-1 text-bronze">My Profile</h3>
+            <p class="text-sm text-gray-600">View your assessment history</p>
         </a>
     </div>
     

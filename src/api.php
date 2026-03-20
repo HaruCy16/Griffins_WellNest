@@ -21,7 +21,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 // Handle CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit;
+    exit; 
 }
 
 try {
@@ -243,7 +243,7 @@ function handleGetAssessments() {
                   WHERE is_active = 1
                   ORDER BY assessment_type ASC";
 
-        $assessments = fetchAll($query, []);
+        $assessments = Database::fetchAll($query, []);
 
         respondSuccess($assessments, 'Assessments retrieved successfully');
 
@@ -270,7 +270,7 @@ function handleGetAssessmentQuestions() {
         // Get assessment details
         $assessmentQuery = "SELECT assessment_id, assessment_name, instructions FROM assessments 
                             WHERE assessment_id = ? AND is_active = 1";
-        $assessment = fetchOne($assessmentQuery, [$assessmentId]);
+        $assessment = Database::fetchOne($assessmentQuery, [$assessmentId]);
 
         if (!$assessment) {
             respondError('Assessment not found', 404);
@@ -281,7 +281,7 @@ function handleGetAssessmentQuestions() {
                            FROM questions q
                            WHERE q.assessment_id = ? 
                            ORDER BY q.question_order ASC";
-        $questions = fetchAll($questionsQuery, [$assessmentId]);
+        $questions = Database::fetchAll($questionsQuery, [$assessmentId]);
 
         // Get options for each question (only if it has answer options)
         foreach ($questions as &$question) {
@@ -290,7 +290,7 @@ function handleGetAssessmentQuestions() {
                                  FROM answer_options
                                  WHERE question_id = ?
                                  ORDER BY option_order ASC";
-                $question['options'] = fetchAll($optionsQuery, [$question['question_id']]);
+                $question['options'] = Database::fetchAll($optionsQuery, [$question['question_id']]);
             } else {
                 // Open text or voice note - no options to display
                 $question['options'] = [];
@@ -341,7 +341,7 @@ function handleSubmitResponse() {
 
         // Check if question exists and get its type
         $questionQuery = "SELECT question_id, question_type FROM questions WHERE question_id = ? AND assessment_id = ?";
-        $question = fetchOne($questionQuery, [$questionId, $assessmentId]);
+        $question = Database::fetchOne($questionQuery, [$questionId, $assessmentId]);
 
         if (!$question) {
             respondError('Question not found', 404);
@@ -363,7 +363,7 @@ function handleSubmitResponse() {
         // Get option value
         $optionQuery = "SELECT option_id, option_value FROM answer_options 
                         WHERE option_id = ? AND question_id = ?";
-        $option = fetchOne($optionQuery, [$optionId, $questionId]);
+        $option = Database::fetchOne($optionQuery, [$optionId, $questionId]);
 
         if (!$option) {
             respondError('Option not found', 404);
@@ -380,7 +380,7 @@ function handleSubmitResponse() {
                           score_points = VALUES(score_points),
                           completed_at = NOW()";
 
-        executeQuery($responseQuery, [$assessmentId, $userId, $questionId, $optionId, $scorePoints]);
+        Database::query($responseQuery, [$assessmentId, $userId, $questionId, $optionId, $scorePoints]);
 
         // Log the action
         logAudit('SUBMIT_RESPONSE', 'assessment_responses', $userId, [
@@ -420,7 +420,7 @@ function handleCompleteAssessment() {
 
         // Check if assessment exists and get its type
         $assessmentQuery = "SELECT assessment_id, assessment_type FROM assessments WHERE assessment_id = ?";
-        $assessment = fetchOne($assessmentQuery, [$assessmentId]);
+        $assessment = Database::fetchOne($assessmentQuery, [$assessmentId]);
 
         if (!$assessment) {
             respondError('Assessment not found', 404);
@@ -431,7 +431,7 @@ function handleCompleteAssessment() {
                        FROM assessment_responses
                        WHERE user_id = ? AND assessment_id = ?";
 
-        $scoreData = fetchOne($scoreQuery, [$userId, $assessmentId]);
+        $scoreData = Database::fetchOne($scoreQuery, [$userId, $assessmentId]);
         $totalScore = $scoreData['total_score'] ?? 0;
 
         // Calculate max score based on assessment type
@@ -452,7 +452,7 @@ function handleCompleteAssessment() {
                   risk_level = VALUES(risk_level),
                   completed_at = NOW()";
 
-        executeQuery($query, [$userId, $assessmentId, $totalScore, $maxScore, $riskLevel]);
+        Database::query($query, [$userId, $assessmentId, $totalScore, $maxScore, $riskLevel]);
 
         // Log the action
         logAudit('COMPLETE_ASSESSMENT', 'assessment_scores', $userId, [
@@ -496,7 +496,7 @@ function handleGetSectionStudents() {
         // Get counselor's section (admin can access all)
         if (isCounselor()) {
             $sectionQuery = "SELECT section_id FROM users WHERE user_id = ?";
-            $counselor = fetchOne($sectionQuery, [$userId]);
+            $counselor = Database::fetchOne($sectionQuery, [$userId]);
 
             if (!$counselor || !$counselor['section_id']) {
                 respondError('Counselor section not found', 404);
@@ -522,7 +522,7 @@ function handleGetSectionStudents() {
                   GROUP BY u.user_id
                   ORDER BY u.last_name ASC, u.first_name ASC";
 
-        $students = fetchAll($query, [$sectionId, ROLE_STUDENT]);
+        $students = Database::fetchAll($query, [$sectionId, ROLE_STUDENT]);
 
         respondSuccess($students, 'Students retrieved successfully');
 
@@ -549,7 +549,7 @@ function handleGetStudentDetails() {
         // Get student info
         $studentQuery = "SELECT user_id, email, first_name, last_name, student_id, created_at FROM users 
                         WHERE user_id = ? AND role_id = ?";
-        $student = fetchOne($studentQuery, [$studentId, ROLE_STUDENT]);
+        $student = Database::fetchOne($studentQuery, [$studentId, ROLE_STUDENT]);
 
         if (!$student) {
             respondError('Student not found', 404);
@@ -564,7 +564,7 @@ function handleGetStudentDetails() {
                              ORDER BY ascore.completed_at DESC
                              LIMIT 10";
 
-        $assessments = fetchAll($assessmentsQuery, [$studentId]);
+        $assessments = Database::fetchAll($assessmentsQuery, [$studentId]);
 
         // Get game progress
         $gamesQuery = "SELECT g.game_name, gp.score, gp.times_played, gp.high_score, gp.player_mood_before, 
@@ -575,7 +575,7 @@ function handleGetStudentDetails() {
                        ORDER BY gp.last_played_at DESC
                        LIMIT 5";
 
-        $games = fetchAll($gamesQuery, [$studentId]);
+        $games = Database::fetchAll($gamesQuery, [$studentId]);
 
         respondSuccess([
             'student' => $student,
@@ -606,7 +606,7 @@ function handleGetGames() {
                   WHERE is_active = 1
                   ORDER BY game_name ASC";
 
-        $games = fetchAll($query, []);
+        $games = Database::fetchAll($query, []);
 
         respondSuccess($games, 'Games retrieved successfully');
 
@@ -664,7 +664,7 @@ function handleSaveGameProgress() {
                   high_score = GREATEST(high_score, VALUES(high_score)),
                   last_played_at = NOW()";
 
-        executeQuery($query, [$userId, $gameId, $score, $levelReached, $moodBefore, $moodAfter, $score]);
+        Database::query($query, [$userId, $gameId, $score, $levelReached, $moodBefore, $moodAfter, $score]);
 
         // Log the action
         logAudit('SAVE_GAME_PROGRESS', 'game_progress', $userId, [
@@ -805,7 +805,7 @@ function handleSaveAssessmentResponse() {
         
         // Save response to database
         try {
-            Database::execute(
+            Database::query(
                 "INSERT INTO assessment_responses 
                  (assessment_id, user_id, question_id, selected_option_id, response_text, score_points, completed_at)
                  VALUES (?, ?, ?, ?, ?, ?, NOW())
@@ -883,14 +883,12 @@ function handleSaveAssessmentResponse() {
             elseif ($percentage >= 50) $risk_level = 'medium';
             
             // Create assessment score record
-            Database::execute(
+            $scoreId = Database::insert(
                 "INSERT INTO assessment_scores 
                  (user_id, assessment_id, total_score, max_score, risk_level, completed_at, completion_percentage)
                  VALUES (?, ?, ?, ?, ?, NOW(), 100)",
                 [$userId, $assessment_id, $total_score, $maxScore, $risk_level]
             );
-            
-            $scoreId = Database::lastInsertId();
             $response_data['score_id'] = $scoreId;
             $response_data['total_score'] = $total_score;
             $response_data['max_score'] = $maxScore;
