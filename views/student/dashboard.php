@@ -117,84 +117,100 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 </div>
 
-<!-- Two Column Layout -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Main Content -->
-    <div class="lg:col-span-2">
-        
-        <!-- Check-In -->
-        <div class="bg-white rounded-xl shadow p-8 mb-8 card-hover">
-            <h2 class="text-2xl font-bold text-bronze mb-4">How are you feeling today?</h2>
-            <p class="text-gray-600 mb-6">Track your emotional state and get better support</p>
-            <div class="mood-selector" id="moodSelector">
-                <button class="mood-btn" data-mood="calm" title="Calm">😌</button>
-                <button class="mood-btn" data-mood="happy" title="Happy">😊</button>
-                <button class="mood-btn" data-mood="energetic" title="Energetic">🤩</button>
-                <button class="mood-btn" data-mood="neutral" title="Neutral">😐</button>
-                <button class="mood-btn" data-mood="stressed" title="Stressed">😰</button>
-                <button class="mood-btn" data-mood="anxious" title="Anxious">😟</button>
-                <button class="mood-btn" data-mood="sad" title="Sad">😢</button>
-                <button class="mood-btn" data-mood="tired" title="Tired">😴</button>
-            </div>
-            <button class="mt-6 bg-bronze text-white px-6 py-3 rounded-lg hover:bg-bronze-700 font-semibold" id="saveMoodBtn" style="display:none; background-color: #8B6F47; cursor: pointer;">Save Mood</button>
-        </div>
-        
-        <!-- Assessments -->
-        <div class="bg-white rounded-xl shadow p-8 mb-8 card-hover">
-            <h2 class="text-2xl font-bold text-bronze mb-6">📋 Available Assessments</h2>
+<!-- Check-In Section (Full Width) -->
+<div class="bg-white rounded-xl shadow p-8 mb-8 card-hover">
+    <h2 class="text-2xl font-bold text-bronze mb-4">How are you feeling today?</h2>
+    <p class="text-gray-600 mb-6">Track your emotional state and get better support</p>
+    <div class="mood-selector" id="moodSelector">
+        <button class="mood-btn" data-mood="calm" title="Calm">😌</button>
+        <button class="mood-btn" data-mood="happy" title="Happy">😊</button>
+        <button class="mood-btn" data-mood="energetic" title="Energetic">🤩</button>
+        <button class="mood-btn" data-mood="neutral" title="Neutral">😐</button>
+        <button class="mood-btn" data-mood="stressed" title="Stressed">😰</button>
+        <button class="mood-btn" data-mood="anxious" title="Anxious">😟</button>
+        <button class="mood-btn" data-mood="sad" title="Sad">😢</button>
+        <button class="mood-btn" data-mood="tired" title="Tired">😴</button>
+    </div>
+    <button class="mt-6 bg-bronze text-white px-6 py-3 rounded-lg hover:bg-bronze-700 font-semibold" id="saveMoodBtn" style="display:none; background-color: #8B6F47; cursor: pointer;">Save Mood</button>
+</div>
+
+<!-- Games and Assessments Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    
+    <!-- Wellness Games - Left Column -->
+    <div>
+        <h2 class="text-2xl font-bold text-bronze mb-6">🎮 Wellness Games</h2>
+        <?php if (!empty($games)): ?>
             <div class="space-y-4">
-                <?php foreach ($availableAssessments as $a): ?>
-                    <a href="/Wellnest_Sim_Web_Application/views/student/assessment.php?id=<?= $a['assessment_id'] ?>" class="block border rounded-lg p-5 hover:border-golden hover:shadow transition hover:bg-gray-50 text-decoration-none">
+                <?php foreach ($games as $game): ?>
+                    <a href="/Wellnest_Sim_Web_Application/views/student/games/frogger.php" class="block border-2 border-gray-200 rounded-lg p-6 hover:border-golden hover:shadow-lg transition hover:bg-gray-50 text-decoration-none card-hover">
                         <div class="flex justify-between items-start">
-                            <div><h3 class="font-semibold text-bronze"><?= e($a['assessment_name']) ?></h3>
-                            <p class="text-gray-600 text-sm mt-1"><?= e($a['description'] ?? '') ?></p>
-                            <p class="text-xs text-gray-500 mt-2">⏱️ <?= $a['estimated_time'] ?> mins | ❓ <?= $a['total_questions'] ?> questions</p></div>
-                            <span class="bg-golden text-bronze-800 px-4 py-2 rounded-lg text-sm font-semibold">Start Now →</span>
+                            <div class="flex-1">
+                                <div class="text-3xl mb-2">🐸</div>
+                                <h3 class="font-semibold text-bronze text-lg"><?= e($game['game_name']) ?></h3>
+                                <p class="text-gray-600 text-sm mt-1"><?= e($game['description'] ?? 'A therapeutic wellness game') ?></p>
+                                <p class="text-xs text-gray-500 mt-3">
+                                    <span class="mr-4">⏱️ <?= $game['estimated_duration'] ?> mins</span>
+                                    <span>🎯 <?= ucfirst($game['game_type']) ?></span>
+                                </p>
+                                <?php if (!empty($game['benefits'])): ?>
+                                    <p class="text-xs text-gray-600 mt-2 italic">💡 <?= e($game['benefits']) ?></p>
+                                <?php endif; ?>
+                            </div>
+                            <span class="bg-golden text-bronze-800 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap ml-4">Play Now →</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
             </div>
-        </div>
-        
-        <!-- Featured Game -->
-        <?php if (!empty($games)): ?>
-            <?php $game = $games[0]; // Get first (and only) game ?>
-            <div class="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl shadow-lg p-12 card-hover">
-                <div class="text-center">
-                    <div class="text-7xl mb-4">🎮</div>
-                    <h2 class="text-4xl font-bold text-white mb-3"><?= e($game['game_name']) ?></h2>
-                    <p class="text-lg text-white mb-8 max-w-2xl mx-auto"><?= e($game['description'] ?? 'A relaxing wellness game to help you manage stress and improve mental health.') ?></p>
-                    <a href="/Wellnest_Sim_Web_Application/views/student/game.php?id=<?= $game['game_id'] ?>" class="inline-block bg-white text-green-600 px-8 py-3 rounded-lg hover:bg-gray-100 text-lg font-bold transition transform hover:scale-105 cursor-pointer">
-                        Play Now
-                    </a>
-                </div>
+        <?php else: ?>
+            <div class="bg-gray-50 rounded-lg p-6 text-center">
+                <p class="text-gray-600">No games available at the moment.</p>
             </div>
         <?php endif; ?>
     </div>
     
-    <!-- Sidebar -->
+    <!-- Available Assessments - Right Column -->
     <div>
-        <!-- Profile Card -->
-        <div class="bg-white rounded-xl shadow p-6 mb-6 card-hover">
-            <div class="text-center mb-4">
-                <div class="w-16 h-16 bg-gradient-to-br from-bronze to-golden rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold text-white">
-                    <?= strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1)) ?>
-                </div>
-                <h3 class="text-xl font-bold text-bronze"><?= e($user['first_name']) ?> <?= e($user['last_name']) ?></h3>
-                <p class="text-gray-600 text-sm mt-1"><?= e($user['email']) ?></p>
-            </div>
-            <a href="/Wellnest_Sim_Web_Application/views/student/profile.php" class="block w-full text-center bg-bronze text-white px-4 py-2 rounded-lg hover:bg-bronze-700 font-semibold text-sm mb-2">View Profile</a>
-            <a href="/Wellnest_Sim_Web_Application/views/student/profile.php" class="block w-full text-center border border-bronze text-bronze px-4 py-2 rounded-lg hover:bg-bronze-50 font-semibold text-sm">Edit Profile</a>
+        <h2 class="text-2xl font-bold text-bronze mb-6">📋 Available Assessments</h2>
+        <div class="space-y-4">
+            <?php foreach ($availableAssessments as $a): ?>
+                <a href="/Wellnest_Sim_Web_Application/views/student/assessment.php?id=<?= $a['assessment_id'] ?>" class="block border-2 border-gray-200 rounded-lg p-6 hover:border-golden hover:shadow-lg transition hover:bg-gray-50 text-decoration-none card-hover">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-bronze text-lg"><?= e($a['assessment_name']) ?></h3>
+                            <p class="text-gray-600 text-sm mt-1"><?= e($a['description'] ?? '') ?></p>
+                            <p class="text-xs text-gray-500 mt-3">⏱️ <?= $a['estimated_time'] ?> mins | ❓ <?= $a['total_questions'] ?> questions</p>
+                        </div>
+                        <span class="bg-golden text-bronze-800 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap ml-4">Start Now →</span>
+                    </div>
+                </a>
+            <?php endforeach; ?>
         </div>
-        
-        <!-- Notifications -->
-        <div class="bg-white rounded-xl shadow p-6 card-hover">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-bronze">🔔 Notifications</h3>
-                <a href="/Wellnest_Sim_Web_Application/views/student/notifications.php" class="text-golden text-sm font-semibold hover:underline">View All</a>
+    </div>
+</div>
+
+<!-- Profile and Notifications Sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Profile Card -->
+    <div class="bg-white rounded-xl shadow p-6 card-hover">
+        <div class="text-center mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-bronze to-golden rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold text-white">
+                <?= strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1)) ?>
             </div>
-            <p class="text-gray-500 text-sm">You're all caught up!</p>
+            <h3 class="text-xl font-bold text-bronze"><?= e($user['first_name']) ?> <?= e($user['last_name']) ?></h3>
+            <p class="text-gray-600 text-sm mt-1"><?= e($user['email']) ?></p>
         </div>
+        <a href="/Wellnest_Sim_Web_Application/views/student/profile.php" class="block w-full text-center bg-bronze text-white px-4 py-2 rounded-lg hover:bg-bronze-700 font-semibold text-sm mb-2">View Profile</a>
+        <a href="/Wellnest_Sim_Web_Application/views/student/profile.php" class="block w-full text-center border border-bronze text-bronze px-4 py-2 rounded-lg hover:bg-bronze-50 font-semibold text-sm">Edit Profile</a>
+    </div>
+    
+    <!-- Notifications -->
+    <div class="bg-white rounded-xl shadow p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-bronze">🔔 Notifications</h3>
+            <a href="/Wellnest_Sim_Web_Application/views/student/notifications.php" class="text-golden text-sm font-semibold hover:underline">View All</a>
+        </div>
+        <p class="text-gray-500 text-sm">You're all caught up!</p>
     </div>
 </div>
 

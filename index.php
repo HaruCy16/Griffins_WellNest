@@ -20,7 +20,7 @@ if (isLoggedIn()) {
             redirect('/Wellnest_Sim_Web_Application/views/counselor/dashboard.php');
             break;
         case ROLE_ADMIN:
-            redirect('/Wellnest_Sim_Web_Application/views/admin/dashboard.php');
+            redirect('/Wellnest_Sim_Web_Application/views/admin/dashboard.php'); 
             break;
     }
 }
