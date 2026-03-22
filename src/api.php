@@ -454,6 +454,12 @@ function handleCompleteAssessment() {
 
         Database::query($query, [$userId, $assessmentId, $totalScore, $maxScore, $riskLevel]);
 
+        // Get the score_id (either new or existing)
+        $scoreIdQuery = "SELECT score_id FROM assessment_scores 
+                         WHERE user_id = ? AND assessment_id = ?";
+        $scoreRecord = Database::fetchOne($scoreIdQuery, [$userId, $assessmentId]);
+        $scoreId = $scoreRecord['score_id'] ?? null;
+
         // Log the action
         logAudit('COMPLETE_ASSESSMENT', 'assessment_scores', $userId, [
             'assessment_id' => $assessmentId,
@@ -465,6 +471,7 @@ function handleCompleteAssessment() {
         ]);
 
         respondSuccess([
+            'score_id' => (int)$scoreId,
             'total_score' => (float)$totalScore,
             'max_score' => (float)$maxScore,
             'percentage_score' => (float)$percentage,

@@ -184,6 +184,25 @@ function redirect(string $url, int $statusCode = 302): void {
 }
 
 /**
+ * Build application URL using APP_URL base path.
+ * @param string $path Absolute or relative path from app root
+ * @return string
+ */
+function appUrl(string $path = ''): string {
+    $base = rtrim(APP_URL, '/');
+
+    if ($path === '') {
+        return $base === '' ? '/' : $base;
+    }
+
+    if (preg_match('#^https?://#i', $path) === 1) {
+        return $path;
+    }
+
+    return ($base === '' ? '' : $base) . '/' . ltrim($path, '/');
+}
+
+/**
  * Redirect with flash message
  * @param string $url URL to redirect to
  * @param string $message Message to display
@@ -233,7 +252,11 @@ function jsonResponse(array $data, int $statusCode = 200): void {
  * Require user to be logged in
  * @param string $redirectTo URL to redirect if not logged in
  */
-function requireLogin(string $redirectTo = '/Wellnest_Sim_Web_Application/views/login.php'): void {
+function requireLogin(string $redirectTo = ''): void {
+    if ($redirectTo === '') {
+        $redirectTo = appUrl('/views/login.php');
+    }
+
     if (!isLoggedIn()) {
         redirectWithMessage($redirectTo, 'Please log in to continue.', 'warning');
     }
@@ -244,7 +267,11 @@ function requireLogin(string $redirectTo = '/Wellnest_Sim_Web_Application/views/
  * @param int|array $allowedRoles Role ID or array of role IDs
  * @param string $redirectTo URL to redirect if not authorized
  */
-function requireRole(int|array $allowedRoles, string $redirectTo = '/Wellnest_Sim_Web_Application/index.php'): void {
+function requireRole(int|array $allowedRoles, string $redirectTo = ''): void {
+    if ($redirectTo === '') {
+        $redirectTo = appUrl('/index.php');
+    }
+
     requireLogin();
     
     $allowedRoles = is_array($allowedRoles) ? $allowedRoles : [$allowedRoles];
@@ -593,4 +620,227 @@ function fetchOne(string $sql, array $params = []) {
  */
 function fetchAll(string $sql, array $params = []): array {
     return Database::fetchAll($sql, $params);
+}
+
+// =============================================================================
+// ASSESSMENT HELPERS
+// =============================================================================
+
+/**
+ * Generate detailed, personalized conclusion based on assessment type and score
+ * @param string $assessmentType Type of assessment
+ * @param float $percentage Percentage score
+ * @param string $riskLevel Risk level
+ * @return array Detailed conclusion with title, summary, and advice
+ */
+function generateDetailedConclusion(string $assessmentType, float $percentage, string $riskLevel): array {
+    $conclusions = [];
+
+    switch ($assessmentType) {
+        case 'help_seeking':
+            // Help-seeking attitudes: Higher = Better
+            $conclusions = [
+                'low' => [
+                    'title' => '✓ Positive Help-Seeking Attitudes',
+                    'emoji' => '👍',
+                    'summary' => 'Excellent! You have positive attitudes toward seeking help and support. Scores at ' . round($percentage) . '% indicate you recognize the value of counseling and are comfortable reaching out.',
+                    'details' => 'You understand that seeking help is a sign of strength, not weakness. You\'re likely to pursue support when needed and encourage others to do the same.',
+                    'action' => 'Continue fostering these healthy attitudes. Remember, the school counselor is always available if you need support.'
+                ],
+                'medium' => [
+                    'title' => '⚠ Mixed Help-Seeking Attitudes',
+                    'emoji' => '🤔',
+                    'summary' => 'Your score of ' . round($percentage) . '% suggests some uncertainty about seeking help. You may sometimes feel hesitant about reaching out.',
+                    'details' => 'It\'s normal to have mixed feelings about counseling. Many students feel this way initially. Understanding that seeking help is valuable can improve your wellbeing.',
+                    'action' => 'Consider exploring what makes you hesitant about seeking help. Try our wellness games or chatting with a counselor - they can help you build confidence.'
+                ],
+                'high' => [
+                    'title' => '⚠ Concerns About Help-Seeking',
+                    'emoji' => '😟',
+                    'summary' => 'Your score of ' . round($percentage) . '% indicates some barriers to seeking help. You may feel uncomfortable asking for support.',
+                    'details' => 'Many students feel uncomfortable seeking help due to stigma, fear of judgment, or uncertainty. These feelings are valid but can be overcome.',
+                    'action' => 'We encourage you to talk with our school counselor confidentially. They\'re trained to help and are there specifically to support you.'
+                ],
+                'critical' => [
+                    'title' => '🚨 Significant Help-Seeking Barriers',
+                    'emoji' => '🆘',
+                    'summary' => 'Your score of ' . round($percentage) . '% shows significant reluctance toward seeking help. This is concerning as support is crucial for wellbeing.',
+                    'details' => 'Please know that seeking help is not weakness. Counselors are confidential, non-judgmental, and experienced in helping students.',
+                    'action' => 'We strongly recommend scheduling a meeting with our school counselor. Your mental health is important, and they\'re here to support you.'
+                ]
+            ];
+            break;
+
+        case 'stress':
+            // Stress: Lower % = Low stress, Higher % = High stress
+            $conclusions = [
+                'low' => [
+                    'title' => '✓ Healthy Stress Levels',
+                    'emoji' => '😊',
+                    'summary' => 'Great! Your stress score of ' . round($percentage) . '% indicates you\'re managing stress well. You\'re maintaining healthy coping skills.',
+                    'details' => 'You\'re handling life\'s challenges effectively and likely have good support systems and coping mechanisms in place.',
+                    'action' => 'Continue your current wellness habits. Regular exercise, good sleep, and social connections help maintain this balance.'
+                ],
+                'medium' => [
+                    'title' => '⚠ Moderate Stress Levels',
+                    'emoji' => '😐',
+                    'summary' => 'Your stress score of ' . round($percentage) . '% shows moderate stress levels. You\'re managing but could benefit from additional support.',
+                    'details' => 'It\'s normal to experience stress, but there are ways to better manage it. Identifying your stressors can help.',
+                    'action' => 'Try our relaxation games, journaling, or talking to someone you trust. Even small stress-relief activities can help.'
+                ],
+                'high' => [
+                    'title' => '⚠ High Stress Levels',
+                    'emoji' => '😤',
+                    'summary' => 'Your stress score of ' . round($percentage) . '% indicates elevated stress that deserves attention. You may be feeling overwhelmed.',
+                    'details' => 'High stress can affect your health, sleep, and academics. Identifying stressors and developing coping strategies is important.',
+                    'action' => 'We recommend trying our therapeutic games, breathing exercises, or scheduling time with a counselor to develop a stress management plan.'
+                ],
+                'critical' => [
+                    'title' => '🚨 Critical Stress Levels',
+                    'emoji' => '😰',
+                    'summary' => 'Your stress score of ' . round($percentage) . '% indicates critical stress levels. You may be feeling severe overwhelm or anxiety.',
+                    'details' => 'When stress reaches this level, professional support becomes especially important. You don\'t have to face this alone.',
+                    'action' => 'Please reach out to our school counselor immediately. They can help you develop coping strategies and connect you with additional resources.'
+                ]
+            ];
+            break;
+
+        case 'anxiety':
+            // Anxiety: Lower % = Low anxiety, Higher % = High anxiety  
+            $conclusions = [
+                'low' => [
+                    'title' => '✓ Low Anxiety Levels',
+                    'emoji' => '😌',
+                    'summary' => 'Excellent! Your anxiety score of ' . round($percentage) . '% shows you\'re managing anxiety well. You\'re calm and grounded.',
+                    'details' => 'You have good control over anxious thoughts and feelings. Your coping strategies are working effectively.',
+                    'action' => 'Maintain your current healthy habits. Keep practicing relaxation techniques and maintaining your support network.'
+                ],
+                'medium' => [
+                    'title' => '⚠ Moderate Anxiety',
+                    'emoji' => '😟',
+                    'summary' => 'Your anxiety score of ' . round($percentage) . '% indicates moderate anxiety. You likely feel nervous or worried at times.',
+                    'details' => 'Some anxiety is normal, especially during challenging situations. Learning specific techniques can help you manage it better.',
+                    'action' => 'Try our breathing games, mindfulness exercises, or journaling. These can help reduce anxious thoughts.'
+                ],
+                'high' => [
+                    'title' => '⚠ High Anxiety Levels',
+                    'emoji' => '😨',
+                    'summary' => 'Your anxiety score of ' . round($percentage) . '% shows elevated anxiety that\'s likely affecting your daily life.',
+                    'details' => 'High anxiety can make it hard to concentrate, sleep, or enjoy activities. Professional support can teach you effective strategies.',
+                    'action' => 'We recommend speaking with a counselor about anxiety management techniques. Therapy can be very effective.'
+                ],
+                'critical' => [
+                    'title' => '🚨 Severe Anxiety',
+                    'emoji' => '😱',
+                    'summary' => 'Your anxiety score of ' . round($percentage) . '% indicates severe anxiety that needs professional support.',
+                    'details' => 'Severe anxiety is interfering with your functioning. You deserve professional help to manage these feelings.',
+                    'action' => 'Please contact our school counselor right away. They can provide immediate support and connect you with resources.'
+                ]
+            ];
+            break;
+
+        case 'depression':
+            // Depression: Lower % = Low depression, Higher % = High depression
+            $conclusions = [
+                'low' => [
+                    'title' => '✓ Low Depression Levels',
+                    'emoji' => '😊',
+                    'summary' => 'Great! Your depression score of ' . round($percentage) . '% shows you\'re in a positive mental state. You\'re managing well.',
+                    'details' => 'You maintain positive mood and energy levels. Your outlook and engagement with life are healthy.',
+                    'action' => 'Continue your current lifestyle and self-care practices. Stay connected with friends and maintain activities you enjoy.'
+                ],
+                'medium' => [
+                    'title' => '⚠ Moderate Depressive Symptoms',
+                    'emoji' => '😐',
+                    'summary' => 'Your depression score of ' . round($percentage) . '% shows some depressive symptoms. You may feel lonely or lack energy sometimes.',
+                    'details' => 'These feelings are common in students. Increasing social connection and physical activity often helps improve mood.',
+                    'action' => 'Engage in activities you enjoy, spend time with friends, and maintain regular sleep and exercise. Consider talking to someone.'
+                ],
+                'high' => [
+                    'title' => '⚠ High Depressive Symptoms',
+                    'emoji' => '😔',
+                    'summary' => 'Your depression score of ' . round($percentage) . '% indicates significant depressive symptoms affecting your life.',
+                    'details' => 'You may be experiencing persistent sadness, loss of interest in activities, or difficulty concentrating. Professional support can help.',
+                    'action' => 'Please speak with our school counselor. They can help you understand these feelings and develop a recovery plan.'
+                ],
+                'critical' => [
+                    'title' => '🚨 Severe Depression',
+                    'emoji' => '😞',
+                    'summary' => 'Your depression score of ' . round($percentage) . '% shows severe depressive symptoms. You need professional support now.',
+                    'details' => 'Severe depression requires treatment. You\'re not alone, and help is available. Recovery is possible.',
+                    'action' => 'Please contact our school counselor immediately or call a crisis helpline. Your wellbeing is our priority.'
+                ]
+            ];
+            break;
+
+        case 'school_experience':
+            // School experience: Higher % = Better experience, Lower % = Worse
+            $conclusions = [
+                'low' => [
+                    'title' => '😠 Poor School Experience',
+                    'emoji' => '😞',
+                    'summary' => 'Your school experience score of ' . round($percentage) . '% is low. You\'re struggling with school life.',
+                    'details' => 'Something about your school environment may be causing dissatisfaction. This could relate to academics, social dynamics, or other factors.',
+                    'action' => 'Talk with a counselor about what\'s making school difficult. They can help you navigate challenges and find solutions.'
+                ],
+                'medium' => [
+                    'title' => '🤷 Mixed School Experience',
+                    'emoji' => '😐',
+                    'summary' => 'Your school experience score of ' . round($percentage) . '% shows mixed feelings about school.',
+                    'details' => 'You find some good things about school but also face challenges. Finding your niche can improve your experience.',
+                    'action' => 'Consider joining clubs or activities you\'re interested in. Connect with classmates who share your interests.'
+                ],
+                'high' => [
+                    'title' => '😊 Good School Experience',
+                    'emoji' => '😊',
+                    'summary' => 'Excellent! Your school experience score of ' . round($percentage) . '% shows you\'re generally satisfied with school.',
+                    'details' => 'You\'ve developed positive relationships and are engaged with school life. You\'re thriving academically and socially.',
+                    'action' => 'Keep up your positive engagement! Share what works for you with other students.'
+                ],
+                'critical' => [
+                    'title' => '✓ Outstanding School Experience',
+                    'emoji' => '🎉',
+                    'summary' => 'Outstanding! Your school experience score of ' . round($percentage) . '% shows you\'re thriving at school!',
+                    'details' => 'You\'re fully engaged, making strong connections, and enjoying your school experience. You\'re making the most of your time here.',
+                    'action' => 'Continue being a positive presence at school. Help others who may be struggling with their own experiences.'
+                ]
+            ];
+            break;
+
+        default:
+            // Generic conclusion for unspecified types
+            $conclusions = [
+                'low' => [
+                    'title' => '✓ Low Risk',
+                    'emoji' => '✓',
+                    'summary' => 'Your assessment score of ' . round($percentage) . '% indicates low risk. You\'re managing well.',
+                    'details' => 'You\'re showing positive indicators in this area. Keep up your current approach.',
+                    'action' => 'Continue what you\'re doing. Regular check-ins and self-care are important.'
+                ],
+                'medium' => [
+                    'title' => '⚠ Medium Risk',
+                    'emoji' => '⚠',
+                    'summary' => 'Your assessment score of ' . round($percentage) . '% shows areas that could use attention.',
+                    'details' => 'There are opportunities to improve. Consider engaging with wellness resources.',
+                    'action' => 'Try our wellness activities, games, or speak with a counselor for guidance.'
+                ],
+                'high' => [
+                    'title' => '⚠ High Risk',
+                    'emoji' => '⚠',
+                    'summary' => 'Your assessment score of ' . round($percentage) . '% indicates areas that need attention.',
+                    'details' => 'Professional support would be beneficial at this time.',
+                    'action' => 'We recommend scheduling time with our school counselor soon.'
+                ],
+                'critical' => [
+                    'title' => '🚨 Critical Risk',
+                    'emoji' => '🚨',
+                    'summary' => 'Your assessment score of ' . round($percentage) . '% indicates critical concerns.',
+                    'details' => 'Professional support is important now. You don\'t have to handle this alone.',
+                    'action' => 'Please reach out to our school counselor immediately.'
+                ]
+            ];
+            break;
+    }
+
+    return $conclusions[$riskLevel] ?? $conclusions['medium'];
 }

@@ -254,7 +254,30 @@ try {
                         <div class="option-group">
                             <label class="radio-option" onclick="selectOption(this)">
                                 <input type="radio" name="response_value" value="<?= $option['option_id'] ?>" style="margin-right: 15px;">
-                                <span><?= e($option['option_text']) ?></span>
+                                <span>
+                                    <?php 
+                                        $optionEmojis = [
+                                            'yes' => '✅',
+                                            'no' => '❌',
+                                            'agree' => '👍',
+                                            'disagree' => '👎',
+                                            'strongly agree' => '💯',
+                                            'strongly disagree' => '🚫',
+                                            'somewhat agree' => '👍',
+                                            'somewhat disagree' => '👎',
+                                        ];
+                                        $optionLower = strtolower(trim($option['option_text']));
+                                        $emoji = '•';
+                                        foreach ($optionEmojis as $key => $em) {
+                                            if (strpos($optionLower, $key) !== false) {
+                                                $emoji = $em;
+                                                break;
+                                            }
+                                        }
+                                        echo $emoji . ' ';
+                                    ?>
+                                    <?= e($option['option_text']) ?>
+                                </span>
                             </label>
                         </div>
                     <?php endforeach; ?>
@@ -280,7 +303,7 @@ try {
                             data-value="<?= $option['option_id'] ?>"
                             onclick="selectLikert(this)">
                             <div style="font-size: 24px; margin-bottom: 8px;">
-                                <?= $option['option_text'] === 'Yes' ? '✓' : '✗' ?>
+                                <?= $option['option_text'] === 'Yes' ? '✅' : '❌' ?>
                             </div>
                             <div><?= e($option['option_text']) ?></div>
                         </button>
@@ -297,8 +320,43 @@ try {
                             class="likert-btn" 
                             data-value="<?= $option['option_id'] ?>"
                             onclick="selectLikert(this)"
-                            style="font-size: 20px; font-weight: bold;">
-                            <?= e($option['option_text']) ?>
+                            style="font-size: 20px; font-weight: bold; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                            <div>
+                                <?php 
+                                    $scaleEmojis = [
+                                        '1' => '😔',
+                                        '2' => '😟',
+                                        '3' => '😐',
+                                        '4' => '🙂',
+                                        '5' => '😊',
+                                        '6' => '😄',
+                                        '7' => '😄',
+                                        '8' => '😄',
+                                        '9' => '😄',
+                                        '10' => '🎉',
+                                        'very low' => '😔',
+                                        'low' => '😟',
+                                        'medium' => '😐',
+                                        'high' => '😊',
+                                        'very high' => '😄',
+                                        'never' => '❌',
+                                        'rarely' => '😟',
+                                        'sometimes' => '😐',
+                                        'often' => '😊',
+                                        'always' => '✅',
+                                    ];
+                                    $optionLower = strtolower(trim($option['option_text']));
+                                    $emoji = '•';
+                                    foreach ($scaleEmojis as $key => $em) {
+                                        if ($optionLower === $key || strpos($optionLower, $key) !== false) {
+                                            $emoji = $em;
+                                            break;
+                                        }
+                                    }
+                                    echo $emoji;
+                                ?>
+                            </div>
+                            <div><?= e($option['option_text']) ?></div>
                         </button>
                     <?php endforeach; ?>
                 </div>
@@ -344,21 +402,48 @@ try {
 
             if (questionType === 'open_text') {
                 // Open text can be empty, proceed
-                window.location.href = '?id=<?= $assessment_id ?>&q=<?= $currentQuestion + 1 ?>';
+                saveCurrentResponse(() => {
+                    window.location.href = '?id=<?= $assessment_id ?>&q=<?= $currentQuestion + 1 ?>';
+                });
             } else if (questionType === 'likert' || questionType === 'yes_no' || questionType === 'scale') {
                 if (!selectedValue && isRequired) {
                     alert('Please select an answer');
                     return;
                 }
-                window.location.href = '?id=<?= $assessment_id ?>&q=<?= $currentQuestion + 1 ?>';
+                saveCurrentResponse(() => {
+                    window.location.href = '?id=<?= $assessment_id ?>&q=<?= $currentQuestion + 1 ?>';
+                });
             } else if (questionType === 'multiple_choice') {
                 const checked = document.querySelector('input[name="response_value"]:checked');
                 if (!checked && isRequired) {
                     alert('Please select an answer');
                     return;
                 }
-                window.location.href = '?id=<?= $assessment_id ?>&q=<?= $currentQuestion + 1 ?>';
+                saveCurrentResponse(() => {
+                    window.location.href = '?id=<?= $assessment_id ?>&q=<?= $currentQuestion + 1 ?>';
+                });
             }
+        }
+
+        function saveCurrentResponse(callback) {
+            const formData = new FormData(document.getElementById('assessmentForm'));
+            
+            fetch('/Wellnest_Sim_Web_Application/src/api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (callback) callback();
+                } else {
+                    alert('Error saving response: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving response: ' + error.message);
+            });
         }
 
         function goToPrevious() {
@@ -368,23 +453,42 @@ try {
         document.getElementById('assessmentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Gather all responses before submitting
-            const formData = new FormData(this);
+            // First save the final question's response
+            const formData = new FormData(e.target);
 
             try {
-                const response = await fetch('/Wellnest_Sim_Web_Application/src/api.php', {
+                // Save the last response
+                const saveResponse = await fetch('/Wellnest_Sim_Web_Application/src/api.php', {
                     method: 'POST',
                     body: formData
                 });
 
-                const data = await response.json();
+                const saveData = await saveResponse.json();
 
-                if (data.success) {
+                if (!saveData.success) {
+                    showError('Error saving final response: ' + (saveData.message || 'Unknown error'));
+                    return;
+                }
+
+                // Now complete the assessment to calculate final score
+                const assessment_id = '<?= $assessment_id ?>';
+                const completeData = new FormData();
+                completeData.append('action', 'complete_assessment');
+                completeData.append('assessment_id', assessment_id);
+
+                const completeResponse = await fetch('/Wellnest_Sim_Web_Application/src/api.php', {
+                    method: 'POST',
+                    body: completeData
+                });
+
+                const completeResult = await completeResponse.json();
+
+                if (completeResult.success) {
                     showSuccess('Assessment submitted! Processing results...', () => {
-                        window.location.href = '/Wellnest_Sim_Web_Application/views/student/assessment-results.php?score_id=' + data.score_id;
+                        window.location.href = '/Wellnest_Sim_Web_Application/views/student/assessment-results.php?score_id=' + completeResult.data.score_id;
                     });
                 } else {
-                    showError('Error: ' + (data.message || 'Failed to submit assessment'));
+                    showError('Error: ' + (completeResult.message || 'Failed to complete assessment'));
                 }
             } catch (error) {
                 showError('Submission error: ' + error.message);

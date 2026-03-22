@@ -36,6 +36,13 @@ try {
         throw new Exception("Assessment score not found.");
     }
 
+    // Generate detailed conclusion
+    $conclusion = generateDetailedConclusion(
+        $score['assessment_type'],
+        $score['percentage_score'],
+        $score['risk_level']
+    );
+
     // Get recommendations for this score (if any)
     $recommendations = Database::fetchAll(
         "SELECT * FROM recommendations 
@@ -110,23 +117,25 @@ try {
 
     <!-- Risk Level Interpretation -->
     <div class="result-card">
-        <h2 class="text-2xl font-bold text-bronze mb-4">📌 What This Means</h2>
+        <h2 class="text-2xl font-bold text-bronze mb-4">📌 <?= $conclusion['emoji'] ?> <?= $conclusion['title'] ?></h2>
         
-        <?php if ($score['risk_level'] === 'low'): ?>
-            <p class="text-green-700 text-lg mb-3">✓ <strong>You're doing well!</strong></p>
-            <p class="text-gray-700">Your assessment results indicate a low risk level. Continue taking care of yourself and maintaining healthy habits. Remember, it's always okay to reach out for support if you need it.</p>
-        
-        <?php elseif ($score['risk_level'] === 'medium'): ?>
-            <p class="text-yellow-700 text-lg mb-3">⚠ <strong>Some concerns detected</strong></p>
-            <p class="text-gray-700">Your assessment shows moderate stress or concerns. Consider engaging in wellness activities or speaking with a counselor for support.</p>
-        
-        <?php elseif ($score['risk_level'] === 'high'): ?>
-            <p class="text-red-700 text-lg mb-3">⚠ <strong>Elevated concerns</strong></p>
-            <p class="text-gray-700">Your assessment indicates elevated concerns that deserve attention. We recommend scheduling a meeting with our school counselor who can provide personalized support.</p>
-        
-        <?php else: ?>
-            <p class="text-gray-700">Review your assessment results and consider the recommendations below.</p>
-        <?php endif; ?>
+        <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+            <p class="text-lg text-gray-800"><strong><?= $conclusion['summary'] ?></strong></p>
+        </div>
+
+        <div class="mb-6">
+            <p class="text-gray-700 mb-4"><?= $conclusion['details'] ?></p>
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                <p class="text-gray-900"><strong>💡 What you can do:</strong></p>
+                <p class="text-gray-700 mt-2"><?= $conclusion['action'] ?></p>
+            </div>
+        </div>
+
+        <div class="text-sm text-gray-600 mt-4 pt-4 border-t">
+            <p>Assessment: <?= e($score['assessment_name']) ?></p>
+            <p>Type: <?= ucfirst(str_replace('_', ' ', $score['assessment_type'])) ?></p>
+            <p>Completed: <?= date('M d, Y g:i A', strtotime($score['completed_at'])) ?></p>
+        </div>
     </div>
 
     <!-- Recommendations -->

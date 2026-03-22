@@ -548,8 +548,8 @@ $userId = $_SESSION['user_id'];
         const player = {
             x: Math.floor(GRID_WIDTH / 2),
             y: GRID_HEIGHT - 2,
-            width: 1,
-            height: 1,
+            width: 1.2,  // Slightly larger hitbox (EASY MODE)
+            height: 1.2, // Slightly larger hitbox (EASY MODE)
             color: '#00aa00'
         };
 
@@ -566,20 +566,21 @@ $userId = $_SESSION['user_id'];
 
         // ===== LANE CONFIGURATION FUNCTION =====
         // Create lanes based on current level for proper difficulty scaling
+        // EASY MODE: Reduced base speeds, but scaled with level for progression
         function createLanes() {
             return [
                 { type: 'goal', speed: 0, color: '#ffdd00', obstacle: 'none' },
                 { type: 'grass', speed: 0, color: '#90ee90', obstacle: 'none' },
-                { type: 'water', speed: 2 * level, color: '#4ba3ff', obstacle: 'log', direction: 1 },
-                { type: 'water', speed: 2.5 * level, color: '#4ba3ff', obstacle: 'log', direction: -1 },
-                { type: 'water', speed: 2 * level, color: '#4ba3ff', obstacle: 'log', direction: 1 },
+                { type: 'water', speed: 0.8 * level, color: '#4ba3ff', obstacle: 'log', direction: 1 },
+                { type: 'water', speed: 0.9 * level, color: '#4ba3ff', obstacle: 'log', direction: -1 },
+                { type: 'water', speed: 0.8 * level, color: '#4ba3ff', obstacle: 'log', direction: 1 },
                 { type: 'grass', speed: 0, color: '#90ee90', obstacle: 'none' },
-                { type: 'road', speed: 3 * level, color: '#666666', obstacle: 'car', direction: 1 },
-                { type: 'road', speed: 3.5 * level, color: '#666666', obstacle: 'car', direction: -1 },
-                { type: 'road', speed: 2.8 * level, color: '#666666', obstacle: 'car', direction: 1 },
+                { type: 'road', speed: 1.0 * level, color: '#666666', obstacle: 'car', direction: 1 },
+                { type: 'road', speed: 1.1 * level, color: '#666666', obstacle: 'car', direction: -1 },
+                { type: 'road', speed: 0.9 * level, color: '#666666', obstacle: 'car', direction: 1 },
                 { type: 'grass', speed: 0, color: '#90ee90', obstacle: 'none' },
-                { type: 'road', speed: 3.2 * level, color: '#666666', obstacle: 'car', direction: -1 },
-                { type: 'road', speed: 2.5 * level, color: '#666666', obstacle: 'car', direction: 1 },
+                { type: 'road', speed: 1.0 * level, color: '#666666', obstacle: 'car', direction: -1 },
+                { type: 'road', speed: 0.8 * level, color: '#666666', obstacle: 'car', direction: 1 },
                 { type: 'grass', speed: 0, color: '#90ee90', obstacle: 'none' },
                 { type: 'grass', speed: 0, color: '#90ee90', obstacle: 'none' },
                 { type: 'grass', speed: 0, color: '#90ee90', obstacle: 'none' }
@@ -597,9 +598,9 @@ $userId = $_SESSION['user_id'];
                 const lane = lanes[y];
 
                 if (lane.obstacle === 'car') {
-                    // Spawn cars
+                    // Spawn cars - EASY MODE: More spacing between cars
                     const carWidth = 2;
-                    const spacing = 4;
+                    const spacing = 6;  // Increased from 4 for more gaps
                     for (let x = 0; x < GRID_WIDTH + carWidth; x += carWidth + spacing) {
                         cars.push({
                             x: x,
@@ -612,9 +613,9 @@ $userId = $_SESSION['user_id'];
                         });
                     }
                 } else if (lane.obstacle === 'log') {
-                    // Spawn logs
+                    // Spawn logs - EASY MODE: More spacing between logs
                     const logWidth = 3;
-                    const spacing = 2;
+                    const spacing = 4;  // Increased from 2 for more gaps
                     for (let x = 0; x < GRID_WIDTH + logWidth; x += logWidth + spacing) {
                         logs.push({
                             x: x,
@@ -793,10 +794,13 @@ $userId = $_SESSION['user_id'];
 
         // ===== COLLISION DETECTION =====
         function isColliding(obj1, obj2) {
-            return obj1.x < obj2.x + obj2.width &&
-                   obj1.x + obj1.width > obj2.x &&
-                   obj1.y < obj2.y + obj2.height &&
-                   obj1.y + obj1.height > obj2.y;
+            // Use a tighter collision box - only 70% of the grid cell
+            const padding = 0.15; // 15% padding on each side
+            
+            return obj1.x + padding < obj2.x + obj2.width &&
+                   obj1.x + 1 - padding > obj2.x &&
+                   obj1.y + padding < obj2.y + obj2.height &&
+                   obj1.y + 1 - padding > obj2.y;
         }
 
         // ===== GAME EVENTS =====

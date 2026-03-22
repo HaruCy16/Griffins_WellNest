@@ -161,7 +161,7 @@ include __DIR__ . '/../layouts/header.php';
                         <?= date('M d, Y', strtotime($record['completed_at'])) ?>
                     </td>
                     <td class="py-4">
-                        <a href="/Wellnest_Sim_Web_Application/views/student/assessment-results.php?id=<?= $record['assessment_score_id'] ?>" class="text-bronze hover:text-bronze-700 font-semibold">
+                        <a href="/Wellnest_Sim_Web_Application/views/student/assessment-results.php?id=<?= $record['score_id'] ?>" class="text-bronze hover:text-bronze-700 font-semibold">
                             View Results →
                         </a>
                     </td>

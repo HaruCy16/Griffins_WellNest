@@ -27,7 +27,7 @@ switch ($action) {
         handleLogout();
         break;
     default:
-        redirect('/Wellnest_Sim_Web_Application/views/login.php');
+        redirect(appUrl('/views/login.php'));
 }
 
 // =============================================================================
@@ -42,12 +42,12 @@ function handleLogin(): void {
     
     // If not POST request, show login form
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        redirect('/Wellnest_Sim_Web_Application/views/login.php');
+        redirect(appUrl('/views/login.php'));
     }
     
     // Verify CSRF token
     if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? null)) {
-        redirectWithMessage('/Wellnest_Sim_Web_Application/views/login.php', 'Invalid request. Please try again.', 'error');
+        redirectWithMessage(appUrl('/views/login.php'), 'Invalid request. Please try again.', 'error');
     }
     
     // Get form data
@@ -59,7 +59,7 @@ function handleLogin(): void {
     if (!$validation->isValid) {
         $_SESSION['login_errors'] = $validation->getAllErrors();
         $_SESSION['login_email'] = $email;
-        redirect('/Wellnest_Sim_Web_Application/views/login.php');
+        redirect(appUrl('/views/login.php'));
     }
     
     // Find user by email
@@ -75,21 +75,21 @@ function handleLogin(): void {
     if (!$user) {
         $_SESSION['login_errors'] = ['email' => 'Invalid email or password.'];
         $_SESSION['login_email'] = $email;
-        redirect('/Wellnest_Sim_Web_Application/views/login.php');
+        redirect(appUrl('/views/login.php'));
     }
     
     // Check if account is active
     if (!$user['is_active']) {
         $_SESSION['login_errors'] = ['email' => 'Your account has been deactivated. Please contact support.'];
         $_SESSION['login_email'] = $email;
-        redirect('/Wellnest_Sim_Web_Application/views/login.php');
+        redirect(appUrl('/views/login.php'));
     }
     
     // Verify password
     if (!verifyPassword($password, $user['password_hash'])) {
         $_SESSION['login_errors'] = ['email' => 'Invalid email or password.'];
         $_SESSION['login_email'] = $email;
-        redirect('/Wellnest_Sim_Web_Application/views/login.php');
+        redirect(appUrl('/views/login.php'));
     }
     
     // Login successful - set session
@@ -120,12 +120,12 @@ function handleRegister(): void {
     
     // If not POST request, show register form
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        redirect('/Wellnest_Sim_Web_Application/views/register.php');
+        redirect(appUrl('/views/register.php'));
     }
     
     // Verify CSRF token
     if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? null)) {
-        redirectWithMessage('/Wellnest_Sim_Web_Application/views/register.php', 'Invalid request. Please try again.', 'error');
+        redirectWithMessage(appUrl('/views/register.php'), 'Invalid request. Please try again.', 'error');
     }
     
     // Get form data
@@ -146,7 +146,7 @@ function handleRegister(): void {
         $_SESSION['register_errors'] = $validation->getAllErrors();
         $_SESSION['register_data'] = $data;
         unset($_SESSION['register_data']['password'], $_SESSION['register_data']['confirm_password']);
-        redirect('/Wellnest_Sim_Web_Application/views/register.php');
+        redirect(appUrl('/views/register.php'));
     }
     
     try {
@@ -179,7 +179,7 @@ function handleRegister(): void {
         
         // Redirect to login with success message
         redirectWithMessage(
-            '/Wellnest_Sim_Web_Application/views/login.php',
+            appUrl('/views/login.php'),
             'Registration successful! Please log in with your credentials.',
             'success'
         );
@@ -191,7 +191,7 @@ function handleRegister(): void {
         $_SESSION['register_errors'] = ['general' => 'Registration failed. Please try again.'];
         $_SESSION['register_data'] = $data;
         unset($_SESSION['register_data']['password'], $_SESSION['register_data']['confirm_password']);
-        redirect('/Wellnest_Sim_Web_Application/views/register.php');
+        redirect(appUrl('/views/register.php'));
     }
 }
 
@@ -207,7 +207,7 @@ function handleLogout(): void {
     }
     
     destroySession();
-    redirectWithMessage('/Wellnest_Sim_Web_Application/views/login.php', 'You have been logged out.', 'success');
+    redirectWithMessage(appUrl('/views/login.php'), 'You have been logged out.', 'success');
 }
 
 // =============================================================================
@@ -222,15 +222,15 @@ function redirectToDashboard(): void {
     
     switch ($role) {
         case ROLE_STUDENT:
-            redirect('/Wellnest_Sim_Web_Application/views/student/dashboard.php');
+            redirect(appUrl('/views/student/dashboard.php'));
             break;
         case ROLE_COUNSELOR:
-            redirect('/Wellnest_Sim_Web_Application/views/counselor/dashboard.php');
+            redirect(appUrl('/views/counselor/dashboard.php'));
             break;
         case ROLE_ADMIN:
-            redirect('/Wellnest_Sim_Web_Application/views/admin/dashboard.php');
+            redirect(appUrl('/views/admin/dashboard.php'));
             break;
         default:
-            redirect('/Wellnest_Sim_Web_Application/index.php');
+            redirect(appUrl('/index.php'));
     }
 }
